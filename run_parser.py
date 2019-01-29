@@ -5,7 +5,7 @@ calcs = ["Compute", "~Results","~ResultsSummary"] 						# "Results", "ResultsSum
 # MPEX Results Summary, Results Summary
 #MPEX_fil = "MPEX_Results/All_tree_selections-4newgblocks_MPExResultsSummary.txt" ; MPEX_opts = ["~inflate", "print table"]
 MPEX_fil = "MPEX_Results/All_tree_selections-4newgblocks_MPExResults.txt" ; MPEX_opts = []
-fasta = "/home/dillion/Dropbox/Reflectin/reflectin_seqs/uniprot_sprot.fasta"
+fasta = "/home/dillion/uniprot_sprot.fasta"
 weblogo_txt = "ABCDEFG"
 ex_seq = "ABCDEFG"
 
