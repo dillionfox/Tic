@@ -5,14 +5,9 @@ calcs = ["Compute", "~Results","~ResultsSummary"] 						# "Results", "ResultsSum
 # MPEX Results Summary, Results Summary
 #MPEX_fil = "MPEX_Results/All_tree_selections-4newgblocks_MPExResultsSummary.txt" ; MPEX_opts = ["~inflate", "print table"]
 MPEX_fil = "MPEX_Results/All_tree_selections-4newgblocks_MPExResults.txt" ; MPEX_opts = []
-#fasta = "has_motifs.fasta"
-#fasta = "aligned.fasta"
-#fasta = "/home/dillion/Dropbox/Reflectin/reflectin_seqs/fasta/ALL_all_reflectins.faa"
-#fasta = "GenBank_refs.fasta"
-#fasta = "/home/dillion/Dropbox/Reflectin/reflectin_seqs/uniprot_sprot.fasta"
-fasta = "/home/dillion/Dropbox/Reflectin/reflectin_seqs/full-length.fasta"
-weblogo_txt = "------------------------NNMFNNMYGNMYRGRYRGMMEPMSRMTMDFQGRYMDSQGRMVDPRYYDYYGRYNDYDRYYGRSMFNYGWMMDGDRYNRNYRFMDFPERYMDMSGYQMDMYGRWMDMYGRHCNPFNQWSYNRHGYFPGYSYGRNMFYPERWMDMSNYSMDMQGRYMDMWGRHCNPFSQYMNYYGRYWNYPGYSNYYYNRNMYYPERYFDMSNWQMDMQGRWMDMHGRYNNPYWYGRNMYYPYQN---------------------------------------------------------"
-ex_seq = "--MSNNNMWGNMSNNNMWGNNMSGNMFNNNMWGNMNRGRYRGMMEPMSRMTMDFQGRYMDSCGRMVDPRFNDYYGRWNDYDRYYGRSMFNYGWMMNGDRYNRNFRSMDFPERYMDMSGYQMDMCGRWMDPSGRQCNPFNQWSYNRHGCYPGYSYGRNMCYPERWMDMSNYSMDMQGRYMDRWGRQCNPFSQYMNYYGRYWNYPGYNNYYNRNMSYPERHFDMSSWQMDMQGRWMDMQGRYNSPYWSNWYGRNMYNPCQNNQWYGRGDYPGMDCSNWQMDMQGRGMDMQGRGMDMQGRGMDMQGGYMNSW------------------"
+fasta = "/home/dillion/Dropbox/Reflectin/reflectin_seqs/uniprot_sprot.fasta"
+weblogo_txt = "ABCDEFG"
+ex_seq = "ABCDEFG"
 
 opts = {'calcs':		calcs,\
 	'fasta':		fasta,\
