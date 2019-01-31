@@ -3,6 +3,14 @@ Code that searches for proteins with (period)ic whole residue "hydropathies"
 
 USAGE:
 I don't expect this to be used by anyone else, ever, so I'll keep this brief.
+
+	import Tic
+
+
+	calc = Tic(fasta="/path/to/file.fasta",standard_plot=True,...)
+
+	calc.run()
+
 You either have to specify a fasta file (or similar) that can be read by Bio,
 or output from MPEx (http://blanco.biomol.uci.edu/mpex/). MPEx is a great tool
 but it requires a java interface that I find to be more trouble than it's worth,
@@ -11,6 +19,8 @@ use MPEx for plus everything I want to do with the output, and it's easy to add
 functionality.
 
 *There are lots of dependencies but all are pretty common:*
+
+	Python 2.7
 
 	numpy
 
