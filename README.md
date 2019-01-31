@@ -2,7 +2,6 @@
 Code that searches for proteins with (period)ic whole residue "hydropathies"
 
 USAGE:
-I don't expect this to be used by anyone else, ever, so I'll keep this brief.
 
 	import Tic
 
