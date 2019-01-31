@@ -49,13 +49,14 @@ class Compute:
 			except ImportError as error:
 				print "Bio package not found. \npip install Biopython"
 				exit()
-		if self.fit_to_sin:
+		if self.fit_to_sin or self.auto_filter:
 			try:
 				import scipy
 			except:
 				print "scipy is needed for curve fitting. \npip install scipy"
 				print "will continue without fit_to_sin feature"
 				self.fit_to_sin = False
+				self.auto_filter = False
 			return None
 		if self.display or self.display_sin:
 			try:
