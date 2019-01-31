@@ -18,7 +18,7 @@ and it's not flexible or extendable. My code can do the things I would otherwise
 use MPEx for plus everything I want to do with the output, and it's easy to add
 functionality.
 
-*There are lots of dependencies but all are pretty common:*
+There are lots of dependencies but all are pretty common:
 
 	Python 2.7
 
@@ -32,7 +32,7 @@ functionality.
 
 	scipy (can be avoided)
 
-*There are several ways to analyze output:*
+There are several ways to analyze output:
 
 	standard_plot	Plot the output (dG vs. residue positions), or the
 			autocorrelation of dG
