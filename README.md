@@ -38,7 +38,7 @@ functionality.
 
 *All default options are stored in tic_utils/settings.py. To use function, change value to True
 
-	***Option		Default Value 	Description**
+	Option			Default Value 	Description
 
 	'calcs':		['Compute']	Internal flag. Can also include
 						'Results' if analyzing output from MPEx
