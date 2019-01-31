@@ -6,7 +6,6 @@ I don't expect this to be used by anyone else, ever, so I'll keep this brief.
 
 	import Tic
 
-
 	calc = Tic(fasta="/path/to/file.fasta",standard_plot=True,...)
 
 	calc.run()
