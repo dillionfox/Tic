@@ -1,6 +1,7 @@
 import re, os
 from tic_utils import calcs
 from tic_utils import table
+from tic_utils import helpstr
 from tic_utils.settings import settings
 from tic_utils.calcs import MPEX_tools
 from tic_utils.calcs import plt
@@ -36,6 +37,8 @@ class Compute:
 		if 'Compute' in self.calcs:
 			if self.fasta == '':
 				raise InputError('fasta','Default mode is "Compute". Must define a .fasta or specify calcs = ["Results"]')
+			if self.dG_scale == 'charge' and self.auto_filter:
+				raise InputError('auto_filter',"The 'auto_filter' function does not play well with the 'charge' scale. Consider using 'sin_filter' instead")
 		if 'Results' in self.calcs:
 			if self.MPEX_fil == '':
 				raise InputError('MPEX file','Must define an MPEX Results file to work with "Results" feature')
@@ -49,16 +52,19 @@ class Compute:
 			except ImportError as error:
 				print "Bio package not found. \npip install Biopython"
 				exit()
-		if self.fit_to_sin or self.auto_filter:
+		if self.sin_filter or self.display_sin or self.plot_phi_shift:
 			try:
 				import scipy
 			except:
 				print "scipy is needed for curve fitting. \npip install scipy"
-				print "will continue without fit_to_sin feature"
-				self.fit_to_sin = False
-				self.auto_filter = False
+				print "will continue without sin_filter feature"
+				self.sin_filter = False
+				self.display_sin = False
+				self.plot_phi_shift = False
+			if (self.display_sin and not self.sin_filter) or (self.plot_phi_shift and not self.sin_filter):
+				self.sin_filter = True
 			return None
-		if self.display or self.display_sin:
+		if self.display or self.display_sin or self.plot_phi_shift:
 			try:
 				import matplotlib
 			except:
@@ -67,13 +73,14 @@ class Compute:
 				self.display_sin = False
 		return None
 
+	def __doc__(self):
+		return helpstr.str()
+
 	def __repr__(self):
-		print "this class ..."
-		return None
+		return '__repr__ for Compute class in Tic module'
 
 	def __str__(self):
-		print "hmm..."
-		return None
+		return '__str__ for Compute class in Tic module'
 
 	def read_fasta(self):
 		for s in SeqIO.parse(self.fasta,'fasta'):
@@ -89,8 +96,7 @@ class Compute:
 	def display(self):
 		if self.standard_plot:
 			return True
-		if self.fit_to_sin:
-			print 'fit_to_sin'
+		if self.sin_filter or self.display_sin or self.plot_phi_shift:
 			return True
 		if self.auto_filter:
 			return True
@@ -156,7 +162,9 @@ class Compute:
 					else:
 						fn.write(">"+calc.name+"\n"+calc.seq+"\n")
 				if self.auto_filter:
-					print 100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked, "% are periodic"
+					print 100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked, "% are periodic - auto_filter"
+				if self.sin_filter:
+					print 100*float(calcs.MPEX_tools.sf)/calcs.MPEX_tools.nchecked, "% are periodic - sin_filter"
 				if self.display():
 					plt.show()
 		return None
@@ -179,7 +187,9 @@ class Compute:
 			print 100*float(calcs.MPEX_tools.nref)/calcs.MPEX_tools.nchecked, "% are reflectin"
 			self.isref_analysis()
 		elif self.auto_filter:
-			print 100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked, "% are periodic"
+			print 100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked, "% are periodic - auto_filter"
+		elif self.sin_filter:
+			print 100*float(calcs.MPEX_tools.sf)/calcs.MPEX_tools.nchecked, "% are periodic - sin_filter"
 		return None
 
 #if __name__ == "__main__":

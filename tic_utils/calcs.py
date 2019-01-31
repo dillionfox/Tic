@@ -13,7 +13,8 @@ class MPEX_tools:
 
 	nchecked = 0	# number of sequences checked
 	nref = 0	# number of sequences with motifs
-	af = 0		# number of sequences that made it through 'autofilter'
+	af = 0		# number of sequences that made it through 'auto_filter'
+	sf = 0		# number of sequences that made it through 'sin_filter'
 
 	def __init__(self, opts, name, seq, dG, counter):
 		self.opts = opts
@@ -33,8 +34,9 @@ class MPEX_tools:
 	@classmethod
 	def reset(cls):
 		cls.nchecked = 0
-		cls.nref = 0    
-		cls.af = 0	    
+		cls.nref = 0
+		cls.af = 0
+		cls.sf = 0
 
 	def run_calcs(self):
 		if self.opts['is_reflectin']:
@@ -59,7 +61,7 @@ class MPEX_tools:
 				return False
 			else:
 				MPEX_tools.af+=1
-		if self.opts['fit_to_sin']:
+		if self.opts['sin_filter'] or self.opts['display_sin'] or self.opts['plot_phi_shift']:
 			"""
 			Attempt to fit dG to a sine function. Return phase shift
 	
@@ -73,6 +75,7 @@ class MPEX_tools:
 					self.make_readable_fasta()
 				if self.opts['plot_phi_shift']:
 					self.plot_shifted()
+				MPEX_tools.sf+=1
 		if self.opts['make_palign']:
 			"""
 			Make pseudo-alignment of sequences by lining them up by location of 'EPM' residues
@@ -207,7 +210,11 @@ class MPEX_tools:
 		def func(x,a,b,c,d): 
 			return a*np.sin(b*x+c)+d
 		p0 = sy.array([6,1/10.2,0,0])
-		coeffs, matcov = curve_fit(func, x, y, p0)
+		try:
+			coeffs, matcov = curve_fit(func, x, y, p0)
+		except TypeError:
+			print "TypeError from curve_fit. Skipping. Usually means not enough points"
+			return False
 		yaj = func(x, coeffs[0], coeffs[1], coeffs[2],coeffs[3])
 		if self.opts['display_sin']:
 			plt.plot(x,y,'--',x,yaj, 'r-')

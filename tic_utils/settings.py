@@ -8,22 +8,23 @@ class settings:
 		'smooth_window':	False,\
 		'standard_plot':	False,\
 		'auto':			False,\
-		'is_reflectin':		False,\
-		'isref_analysis':	False,\
-		'fit_to_sin':		False,\
-		'display_sin':		False,\
-		'r_cutoff':		0.2,\
-		'make_palign':		False,\
-		'print_palign':		False,\
-		'use_weblogo':		False,\
-		'weblogo_txt':		'',\
-		'ex_seq':		'',\
-		'add_peaks':		False,\
-		'print_fasta':		False,\
-		'plot_phi_shift':	False,\
 		'auto_filter':		False,\
 		'ac_cutoff':		-0.3,\
-		'plot_auto_filter':	False}
+		'plot_auto_filter':	False,\
+		'sin_filter':		False,\
+		'display_sin':		False,\
+		'plot_phi_shift':	False,\
+		'r_cutoff':		0.2,\
+		'use_weblogo':		False,\
+		'add_peaks':		False,\
+		'print_fasta':		False,\
+		'make_palign':		False,\
+		'print_palign':		False,\
+		'is_reflectin':		False,\
+		'isref_analysis':	False,\
+		'weblogo_txt':		'',\
+		'ex_seq':		'',\
+		}
 		
 	acceptable_aa = ['A', 'C', 'D', 'E', 'F', 'G',\
 			'H', 'I', 'K', 'L', 'M', 'N',\
