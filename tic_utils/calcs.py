@@ -173,7 +173,7 @@ class MPEX_tools:
 		Prints the sequences aligned by location of EPM.
 
 		"""
-		if self.opts['fasta'] != aligned.fasta:
+		if self.opts['fasta'] != 'aligned.fasta':
 			raise Exception('this method was not designed for this file.')
 		pre_insertions = ''.join(['-' for _ in range(35-self.phi)])
 		post_insertions = ''.join(['-' for _ in range(389-((35-self.phi)+len(self.seq)))])
@@ -305,7 +305,7 @@ class MPEX_tools:
 		
 		# linkers
 		for l in [linker_1, linker_2, linker_3]:
-			lseq = opts['ex_seq'][l[0]:l[1]]
+			lseq = self.opts['ex_seq'][l[0]:l[1]]
 			print l, lseq
 	
 		#plt.xticks(range(len(weblogo_txt)), list(weblogo_txt))

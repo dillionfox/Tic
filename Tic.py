@@ -181,7 +181,7 @@ class Compute:
 				self.main_calcs(name,seq,dG,i)
 		elif 'Results' in self.calcs:
 			for name,seq,dG,i in self.parse_MPEX():
-				main_calcs(name,seq,dG,i)
+				self.main_calcs(name,seq,dG,i)
 		if self.display():
 			#plt.show()
 			print "im here dummy"
