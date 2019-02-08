@@ -38,7 +38,8 @@ class Compute:
 			if self.fasta == '':
 				raise InputError('fasta','Default mode is "Compute". Must define a .fasta or specify calcs = ["Results"]')
 			if self.dG_scale == 'charge' and self.auto_filter:
-				raise InputError('auto_filter',"The 'auto_filter' function does not play well with the 'charge' scale. Consider using 'sin_filter' instead")
+				#raise InputError('auto_filter',"The 'auto_filter' function does not play well with the 'charge' scale. Consider using 'sin_filter' instead")
+				print "this normally gives an input error but it is currently turned off"
 		if 'Results' in self.calcs:
 			if self.MPEX_fil == '':
 				raise InputError('MPEX file','Must define an MPEX Results file to work with "Results" feature')
@@ -182,14 +183,23 @@ class Compute:
 			for name,seq,dG,i in self.parse_MPEX():
 				main_calcs(name,seq,dG,i)
 		if self.display():
-			plt.show()
-		if self.isref_analysis:
-			print 100*float(calcs.MPEX_tools.nref)/calcs.MPEX_tools.nchecked, "% are reflectin"
-			self.isref_analysis()
-		elif self.auto_filter:
-			print 100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked, "% are periodic - auto_filter"
-		elif self.sin_filter:
-			print 100*float(calcs.MPEX_tools.sf)/calcs.MPEX_tools.nchecked, "% are periodic - sin_filter"
+			#plt.show()
+			print "im here dummy"
+			plt.savefig('test.png')
+		if self.isref_analysis or self.auto_filter or self.sin_filter:
+			with open("output.txt", "a") as f:
+				if self.isref_analysis:
+					#print 100*float(calcs.MPEX_tools.nref)/calcs.MPEX_tools.nchecked, "% are periodic - auto_filter"
+					f.write(str(self.fasta)+":\t\t"+str(self.dG_scale)+":\t\t"+str(100*float(calcs.MPEX_tools.nref)/calcs.MPEX_tools.nchecked)+"%\n")
+					self.isref_analysis()
+				elif self.auto_filter:
+					#print 100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked, "% are periodic - auto_filter"
+					f.write(str(self.fasta)+":\t\t"+str(self.dG_scale)+":\t\t"+str(100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked)+"%\n")
+				elif self.sin_filter:
+					#print 100*float(calcs.MPEX_tools.sf)/calcs.MPEX_tools.nchecked, "% are periodic - sin_filter"
+					f.write(str(self.fasta)+":\t\t"+str(self.dG_scale)+":\t\t"+str(100*float(calcs.MPEX_tools.sf)/calcs.MPEX_tools.nchecked)+"%\n")
+				# in case you run several instances of class, make sure to reset all class variables
+		calcs.MPEX_tools.reset()
 		return None
 
 #if __name__ == "__main__":
