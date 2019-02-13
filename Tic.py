@@ -155,5 +155,5 @@ class Compute:
 		return None
 
 if __name__ == "__main__":
-	calc = Tic(fasta='GenBank_refs.fasta',standard_plot=True)
+	calc = Compute(fasta='GenBank_refs.fasta',standard_plot=True)
 	calc.run()
