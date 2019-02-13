@@ -1,7 +1,5 @@
 from __future__ import print_function
 from Bio import SeqIO
-import calcs
-import parser
 import os
 import matplotlib.pyplot as plt
 
