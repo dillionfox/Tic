@@ -1,3 +1,5 @@
+from __future__ import division
+from __future__ import print_function
 import numpy as np
 import os
 import matplotlib as mpl
@@ -56,11 +58,9 @@ class MPEX_tools:
 			Remove all sequences that don't have at least a 100 residue periodic section
 	
 			"""
-			self.auto_filter()
-			if self.period == False:
-				return False
-			else:
+			if self.auto_filter():
 				MPEX_tools.af+=1
+
 		if self.opts['sin_filter'] or self.opts['display_sin'] or self.opts['plot_phi_shift']:
 			"""
 			Attempt to fit dG to a sine function. Return phase shift
@@ -140,21 +140,19 @@ class MPEX_tools:
 		ac = self.autocorr()
 		if any(ac) == False:
 			self.period = False
-			return False
 		if min(ac) > self.opts['ac_cutoff']:
 			self.period = False
-			#return False
-			ac,exclude = self.auto_scan()
-			if any(ac) == False: return False
-		peaks = self.find_peaks(ac)
-		if self.opts['plot_auto_filter']:
-			heights = [ac[i] for i in peaks]
-			plt.scatter(peaks, heights)
-			plt.plot(ac)
-		if len(peaks) > 0:
-			self.period = peaks[0]
-		else:
-			self.period = False
+		if self.opts['plot_auto_filter'] and self.period != False:
+			if self.opts['auto']:
+				plt.plot(ac)
+			else:
+				plt.plot(self.dG)
+		if self.opts['plot_auto_filter_rejected'] and self.period == False:
+			if self.opts['auto']:
+				plt.plot(ac)
+			else:
+				plt.plot(self.dG)
+		return True
 	
 	def auto_scan(self):
 		"""
@@ -178,8 +176,8 @@ class MPEX_tools:
 		pre_insertions = ''.join(['-' for _ in range(35-self.phi)])
 		post_insertions = ''.join(['-' for _ in range(389-((35-self.phi)+len(self.seq)))])
 		complete_seq = pre_insertions+self.seq+post_insertions
-		print ">", self.counter
-		print complete_seq
+		print(">", self.counter)
+		print(complete_seq)
 		return None
 	
 	def pseudo_align(self):
@@ -194,8 +192,8 @@ class MPEX_tools:
 		shift_by = MAX_EPM-EPM_location
 		insertions = ''.join(['-' for _ in range(shift_by)])
 		if self.opts['print_palign']:
-			print ">"
-			print insertions+self.seq
+			print(">")
+			print(insertions+self.seq)
 		self.shift = shift_by
 		return None
 	
@@ -213,7 +211,7 @@ class MPEX_tools:
 		try:
 			coeffs, matcov = curve_fit(func, x, y, p0)
 		except TypeError:
-			print "TypeError from curve_fit. Skipping. Usually means not enough points"
+			print("TypeError from curve_fit. Skipping. Usually means not enough points")
 			return False
 		yaj = func(x, coeffs[0], coeffs[1], coeffs[2],coeffs[3])
 		if self.opts['display_sin']:
@@ -231,7 +229,7 @@ class MPEX_tools:
 			result = np.correlate(x,x,mode='full')
 		except ValueError:
 			return [False]
-		return result[result.size/2:]/max(result)
+		return result[int(result.size/2):]/max(result)
 	
 	def plot_shifted(self,shift=None):
 		if shift == None:
@@ -306,7 +304,7 @@ class MPEX_tools:
 		# linkers
 		for l in [linker_1, linker_2, linker_3]:
 			lseq = self.opts['ex_seq'][l[0]:l[1]]
-			print l, lseq
+			print(l, lseq)
 	
 		#plt.xticks(range(len(weblogo_txt)), list(weblogo_txt))
 		return None

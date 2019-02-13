@@ -1,7 +1,11 @@
+from __future__ import division
+from __future__ import print_function
 import re, os
 from tic_utils import calcs
 from tic_utils import table
 from tic_utils import helpstr
+from tic_utils import parser
+from tic_utils import ref_tests
 from tic_utils.settings import settings
 from tic_utils.calcs import MPEX_tools
 from tic_utils.calcs import plt
@@ -37,9 +41,6 @@ class Compute:
 		if 'Compute' in self.calcs:
 			if self.fasta == '':
 				raise InputError('fasta','Default mode is "Compute". Must define a .fasta or specify calcs = ["Results"]')
-			if self.dG_scale == 'charge' and self.auto_filter:
-				#raise InputError('auto_filter',"The 'auto_filter' function does not play well with the 'charge' scale. Consider using 'sin_filter' instead")
-				print "this normally gives an input error but it is currently turned off"
 		if 'Results' in self.calcs:
 			if self.MPEX_fil == '':
 				raise InputError('MPEX file','Must define an MPEX Results file to work with "Results" feature')
@@ -51,14 +52,14 @@ class Compute:
 				global SeqIO
 				from Bio import SeqIO
 			except ImportError as error:
-				print "Bio package not found. \npip install Biopython"
+				print("Bio package not found. \npip install Biopython")
 				exit()
 		if self.sin_filter or self.display_sin or self.plot_phi_shift:
 			try:
 				import scipy
 			except:
-				print "scipy is needed for curve fitting. \npip install scipy"
-				print "will continue without sin_filter feature"
+				print("scipy is needed for curve fitting. \npip install scipy")
+				print("will continue without sin_filter feature")
 				self.sin_filter = False
 				self.display_sin = False
 				self.plot_phi_shift = False
@@ -69,7 +70,7 @@ class Compute:
 			try:
 				import matplotlib
 			except:
-				print "matplotlib required for plotting. will continue without."
+				print("matplotlib required for plotting. will continue without.")
 				self.display = False
 				self.display_sin = False
 		return None
@@ -83,92 +84,11 @@ class Compute:
 	def __str__(self):
 		return '__str__ for Compute class in Tic module'
 
-	def read_fasta(self):
-		for s in SeqIO.parse(self.fasta,'fasta'):
-			yield s
-
-	@staticmethod
-	def check_seq(seq):
-		for aa in seq:
-			if aa not in settings.acceptable_aa: 
-				return True
-		return False
 
 	def display(self):
-		if self.standard_plot:
-			return True
-		if self.sin_filter or self.display_sin or self.plot_phi_shift:
-			return True
-		if self.auto_filter:
+		if self.sin_filter or self.display_sin or self.plot_phi_shift or self.standard_plot or self.plot_auto_filter or self.plot_auto_filter_rejected:
 			return True
 		return False
-	
-	def parse_fasta(self):
-		window_size = 19 ; dw = window_size//2 ; 
-		for counter,seq in enumerate(self.read_fasta()):
-			trim_seq = re.sub('-','', str(seq.seq))
-			if self.check_seq(trim_seq): continue
-			RFE = [table.table(s,self.dG_scale) for s in trim_seq]
-			dG = []
-			for ind in range(dw,len(trim_seq)-dw+1):
-				s = RFE[ind-dw:ind+dw+1]
-				if len(s) != window_size: continue
-				dG.append(sum(s))
-			yield seq.id,trim_seq,dG,counter
-	
-	def parse_MPEX(self):
-		nseq = 60
-		counter = 0
-		dG = []
-		rseq = []
-		window_size = 19
-		dw = window_size//2
-		phi_list = []
-		for it,line in enumerate(open(self.MPEX_fil)):
-			if counter >= nseq: break
-			try:
-				l = line.split('\t') ; first = l[0]
-			except:
-				continue
-			if len(l) == 0: continue
-			if l[0] == '"Position"':
-				if len(dG) > 0:
-					counter += 1
-					fullseq = ''.join(seq).upper() 
-					yield it,fullseq,dG,it
-				dG = [] ; seq = [] ; rseq = [] ; continue
-			resname = l[1]
-			if l[4] != '':
-				dG.append(float(l[4]))
-				seq.append(l[1])
-	
-	def isref_analysis(self):
-		# reset options list. Fasta will be reset in loop.
-		self.smooth_window = True
-		self.auto_filter = True
-		self.ac_cutoff = -0.2
-		for fil in ['has_motifs.fasta','partial_motifs.fasta','no_motifs.fasta']:
-			calcs.MPEX_tools.reset()
-			print "working in", fil, "now!"
-			try:
-				open(fil,'r')
-			except IOError:
-				print "Run 'is_reflectin' calculation first. Files do not exist"; exit()
-			self.fasta = fil
-			with open(fil.split('.')[0]+'_Tic.fasta','w') as f, open(fil.split('.')[0]+'_nTic.fasta','w') as fn:
-				for name,seq,dG,i in self.parse_fasta():
-					calc = self.main_calcs(name,seq,dG,i)
-					if calc.period != False:
-						f.write(">"+calc.name+"\n"+calc.seq+"\n")
-					else:
-						fn.write(">"+calc.name+"\n"+calc.seq+"\n")
-				if self.auto_filter:
-					print 100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked, "% are periodic - auto_filter"
-				if self.sin_filter:
-					print 100*float(calcs.MPEX_tools.sf)/calcs.MPEX_tools.nchecked, "% are periodic - sin_filter"
-				if self.display():
-					plt.show()
-		return None
 
 	def main_calcs(self,name,seq,dG,i):
 		calc = calcs.MPEX_tools(self.__dict__,name,seq,dG,i)
@@ -177,28 +97,26 @@ class Compute:
 	
 	def run(self):
 		if 'Compute' in self.calcs:
-			for name,seq,dG,i in self.parse_fasta():
+			for name,seq,dG,i in parser.parse_fasta(SeqIO,self.fasta,self.dG_scale):
 				self.main_calcs(name,seq,dG,i)
 		elif 'Results' in self.calcs:
-			for name,seq,dG,i in self.parse_MPEX():
+			for name,seq,dG,i in parser.parse_MPEX(self.MPEX_fil):
 				self.main_calcs(name,seq,dG,i)
 		if self.display():
-			#plt.show()
-			print "im here dummy"
-			plt.savefig('test.png')
+			if 'DISPLAY' in os.environ:
+				plt.show()
+			else:
+				print("Cannot open display. Saving plot as 'result.png' in working directory")
+				plt.savefig('result.png')
 		if self.isref_analysis or self.auto_filter or self.sin_filter:
 			with open("output.txt", "a") as f:
 				if self.isref_analysis:
-					#print 100*float(calcs.MPEX_tools.nref)/calcs.MPEX_tools.nchecked, "% are periodic - auto_filter"
 					f.write(str(self.fasta)+":\t\t"+str(self.dG_scale)+":\t\t"+str(100*float(calcs.MPEX_tools.nref)/calcs.MPEX_tools.nchecked)+"%\n")
-					self.isref_analysis()
+					ref_tests.isref_analysis()
 				elif self.auto_filter:
-					#print 100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked, "% are periodic - auto_filter"
 					f.write(str(self.fasta)+":\t\t"+str(self.dG_scale)+":\t\t"+str(100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked)+"%\n")
 				elif self.sin_filter:
-					#print 100*float(calcs.MPEX_tools.sf)/calcs.MPEX_tools.nchecked, "% are periodic - sin_filter"
 					f.write(str(self.fasta)+":\t\t"+str(self.dG_scale)+":\t\t"+str(100*float(calcs.MPEX_tools.sf)/calcs.MPEX_tools.nchecked)+"%\n")
-				# in case you run several instances of class, make sure to reset all class variables
 		calcs.MPEX_tools.reset()
 		return None
 

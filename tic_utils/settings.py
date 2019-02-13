@@ -11,6 +11,7 @@ class settings:
 		'auto_filter':		False,\
 		'ac_cutoff':		-0.3,\
 		'plot_auto_filter':	False,\
+		'plot_auto_filter_rejected':	False,\
 		'sin_filter':		False,\
 		'display_sin':		False,\
 		'plot_phi_shift':	False,\
@@ -24,6 +25,7 @@ class settings:
 		'isref_analysis':	False,\
 		'weblogo_txt':		'',\
 		'ex_seq':		'',\
+		'skip_100':		False,\
 		}
 		
 	acceptable_aa = ['A', 'C', 'D', 'E', 'F', 'G',\

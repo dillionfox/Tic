@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 class seq:
 	_counter = 0
 	def __init__(self,name,sequence=None,dG=None,rivet=None,RandP=None,aromatics=None):
@@ -64,12 +66,12 @@ class seq:
 
 	@staticmethod
 	def table_header():
-		print "name\tdG\trivett\tRandP\taromatics"
+		print("name\tdG\trivett\tRandP\taromatics")
 
 	def print_table(self):
 		if self.id == 1:
 			self.table_header()
 		for s in range(len(self.sequence)):
-			print self.name,"\t", self.dG[s],"\t", self.rivet[s],"\t", self.RandP[s],"\t", self.aromatics[s]
+			print(self.name,"\t", self.dG[s],"\t", self.rivet[s],"\t", self.RandP[s],"\t", self.aromatics[s])
 		return None
 
