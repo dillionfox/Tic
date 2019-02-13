@@ -90,6 +90,40 @@ class Compute:
 			return True
 		return False
 
+	def ref_analysis(self):
+		# reset options list. Fasta will be reset in loop.
+		self.smooth_window = True
+		self.auto_filter = True
+		self.ac_cutoff = -0.2
+		for fil in ['has_motifs.fasta','partial_motifs.fasta','no_motifs.fasta']:
+			calcs.MPEX_tools.reset()
+			print("working in", fil, "now!")
+			try:
+				open(fil,'r')
+			except IOError:
+				print("Run 'is_reflectin' calculation first. Files do not exist"); exit()
+			self.fasta = fil
+			with open(fil.split('.')[0]+'_Tic.fasta','w') as f, open(fil.split('.')[0]+'_nTic.fasta','w') as fn:
+				for name,seq,dG,i in parser.parse_fasta(SeqIO,self.fasta,self.dG_scale):
+					calc = self.main_calcs(name,seq,dG,i)
+					if calc.period != False:
+						f.write(">"+calc.name+"\n"+calc.seq+"\n")
+					else:
+						fn.write(">"+calc.name+"\n"+calc.seq+"\n")
+				if self.auto_filter:
+					try:
+						print(100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked, "% are periodic - auto_filter")
+					except ZeroDivisionError:
+						print("can't divide by zero")
+				if self.sin_filter:
+					try:
+						print(100*float(calcs.MPEX_tools.sf)/calcs.MPEX_tools.nchecked, "% are periodic - sin_filter")
+					except ZeroDivisionError:
+						print("can't divide by zero")
+				if self.display():
+					plt.show()
+		return None
+
 	def main_calcs(self,name,seq,dG,i):
 		calc = calcs.MPEX_tools(self.__dict__,name,seq,dG,i)
 		calc.run_calcs()
@@ -112,7 +146,7 @@ class Compute:
 			with open("output.txt", "a") as f:
 				if self.isref_analysis:
 					f.write(str(self.fasta)+":\t\t"+str(self.dG_scale)+":\t\t"+str(100*float(calcs.MPEX_tools.nref)/calcs.MPEX_tools.nchecked)+"%\n")
-					ref_tests.isref_analysis()
+					self.ref_analysis()
 				elif self.auto_filter:
 					f.write(str(self.fasta)+":\t\t"+str(self.dG_scale)+":\t\t"+str(100*float(calcs.MPEX_tools.af)/calcs.MPEX_tools.nchecked)+"%\n")
 				elif self.sin_filter:
