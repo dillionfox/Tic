@@ -10,22 +10,7 @@ from tic_utils import ref_tests
 from tic_utils.settings import settings
 from tic_utils.calcs import MPEX_tools
 from tic_utils.calcs import plt
-
-class Error(Exception):
-	"""
-	Base class to handle custom exceptions
-
-	"""
-	pass
-
-class InputError(Error):
-	"""
-	Custom error messages for mis-handling inputs
-
-	"""
-	def __init__(self, expr, message):
-		self.expr = expr
-		self.message = message
+from tic_utils.err import InputError
 
 class Compute:
 
@@ -57,41 +42,44 @@ class Compute:
 
 	def display(self):
 		if self.sin_filter or self.display_sin or self.plot_phi_shift or self.standard_plot or self.plot_auto_filter or self.plot_auto_filter_rejected:
-			return True
-		return False
+			if 'DISPLAY' in os.environ:
+				plt.show()
+			else:
+				print("Cannot open display. Saving plot as 'result.png' in working directory")
+				plt.savefig(self.fasta.split('.')[0]+'_'+self.dG_scale+'_plot.png')
+		return None
 
-	def print_stats(x,y,f):
-		try:
-			f.write(str(self.fasta)+":\t\t"+str(self.dG_scale)+":\t\t"+str(100*x/y+"%\n")
-		except ZeroDivisionError:
-			print("can't divide by zero")
+	def print_stats(self):
+		def save(x):
+			with open("output.txt", "a") as f:
+				try:
+					f.write(str(self.fasta)+":\t\t"+str(self.dG_scale)+":\t\t"+str(100*x/calcs.MPEX_tools.nchecked)+"%\n")
+				except ZeroDivisionError:
+					print("can't divide by zero")
+		if self.isref_analysis: save(calcs.MPEX_tools.nref)
+		if self.auto_filter: save(calcs.MPEX_tools.af)
+		if self.sin_filter: save(calcs.MPEX_tools.sf)
 		return None
 
 	def ref_analysis(self):
-		self.smooth_window = True
-		self.auto_filter = True
-		self.ac_cutoff = -0.2
+		self.smooth_window = True ; self.auto_filter = True
 		for fil in ['has_motifs.fasta','partial_motifs.fasta','no_motifs.fasta']:
 			calcs.MPEX_tools.reset()
-			print("working in", fil, "now!")
+			print("working on", fil, "now!")
 			try:
 				open(fil,'r')
 			except IOError:
 				print("Run 'is_reflectin' calculation first. Files do not exist"); exit()
 			self.fasta = fil
-			with open(fil.split('.')[0]+'_Tic.fasta','w') as fp, open(fil.split('.')[0]+'_nTic.fasta','w') as fn, open("output.txt", "a") as f:
+			with open(fil.split('.')[0]+'_Tic.fasta','w') as fp, open(fil.split('.')[0]+'_nTic.fasta','w') as fn:
 				for name,seq,dG,i in parser.parse_fasta(SeqIO,self.fasta,self.dG_scale):
 					calc = self.main_calcs(name,seq,dG,i)
 					if calc.period != False:
 						fp.write(">"+calc.name+"\n"+calc.seq+"\n")
 					else:
 						fn.write(">"+calc.name+"\n"+calc.seq+"\n")
-				if self.auto_filter:
-					self.print_stats(calcs.MPEX_tools.af,calcs.MPEX_tools.nchecked,f)
-				if self.sin_filter:
-					self.print_stats(calcs.MPEX_tools.sf,calcs.MPEX_tools.nchecked,f)
-				if self.display():
-					plt.show()
+				self.print_stats()
+				self.display()
 		return None
 
 	def main_calcs(self,name,seq,dG,i):
@@ -106,21 +94,9 @@ class Compute:
 		elif 'Results' in self.calcs:
 			for name,seq,dG,i in parser.parse_MPEX(self.MPEX_fil):
 				self.main_calcs(name,seq,dG,i)
-		if self.display():
-			if 'DISPLAY' in os.environ:
-				plt.show()
-			else:
-				print("Cannot open display. Saving plot as 'result.png' in working directory")
-				plt.savefig('result.png')
-		if self.isref_analysis or self.auto_filter or self.sin_filter:
-			with open("output.txt", "a") as f:
-				if self.isref_analysis:
-					self.print_stats(calcs.MPEX_tools.nref,calcs.MPEX_tools.nchecked,f)
-					self.ref_analysis()
-				elif self.auto_filter:
-					self.print_stats(calcs.MPEX_tools.af,calcs.MPEX_tools.nchecked,f)
-				elif self.sin_filter:
-					self.print_stats(calcs.MPEX_tools.sf,calcs.MPEX_tools.nchecked,f)
+		self.display()
+		if self.isref_analysis: self.ref_analysis()
+		self.print_stats()
 		calcs.MPEX_tools.reset()
 		return None
 
