@@ -120,6 +120,6 @@ class Compute:
 		calcs.MPEX_tools.reset()
 		return None
 
-#if __name__ == "__main__":
-#	calc = Tic(fasta='path/to/filename.fasta',standard_plot=True,display=True)
-#	calc.run()
+if __name__ == "__main__":
+	calc = Tic(fasta='GenBank_refs.fasta',standard_plot=True)
+	calc.run()
