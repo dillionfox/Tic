@@ -1,5 +1,5 @@
 from tic_utils.settings import settings
-import table
+from tic_utils import table
 
 def read_fasta(SeqIO,fasta):
 	for s in SeqIO.parse(fasta,'fasta'):

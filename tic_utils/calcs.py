@@ -9,7 +9,7 @@ font = {'family' : 'normal','weight' : 'normal','size'   : 15}
 mpl.rc('font', **font)
 import matplotlib.pyplot as plt
 import re
-import ref_tests as rt
+from tic_utils import ref_tests as rt
 
 class MPEX_tools:
 
