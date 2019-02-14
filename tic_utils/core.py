@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 import re
 from tic_utils import ref_tests as rt
 
-class MPEX_tools:
+class Tic_tools:
 
 	nchecked = 0	# number of sequences checked
 	nref = 0	# number of sequences with motifs
@@ -35,6 +35,7 @@ class MPEX_tools:
 
 	@classmethod
 	def reset(cls):
+		plt.clf()
 		cls.nchecked = 0
 		cls.nref = 0
 		cls.af = 0
@@ -147,12 +148,13 @@ class MPEX_tools:
 				plt.plot(ac)
 			else:
 				plt.plot(self.dG)
+			return True
 		if self.opts['plot_auto_filter_rejected'] and self.period == False:
 			if self.opts['auto']:
 				plt.plot(ac)
 			else:
 				plt.plot(self.dG)
-		return True
+			return False
 	
 	def auto_scan(self):
 		"""

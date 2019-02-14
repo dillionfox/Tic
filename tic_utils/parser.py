@@ -21,32 +21,6 @@ def parse_fasta(SeqIO,fasta,dG_scale):
 			dG.append(sum(s))
 		yield seq.id,trim_seq,dG,counter
 
-def parse_MPEX(MPEX_fil):
-	nseq = 60
-	counter = 0
-	dG = []
-	rseq = []
-	window_size = 19
-	dw = window_size//2
-	phi_list = []
-	for it,line in enumerate(open(MPEX_fil)):
-		if counter >= nseq: break
-		try:
-			l = line.split('\t') ; first = l[0]
-		except:
-			continue
-		if len(l) == 0: continue
-		if l[0] == '"Position"':
-			if len(dG) > 0:
-				counter += 1
-				fullseq = ''.join(seq).upper() 
-				yield it,fullseq,dG,it
-			dG = [] ; seq = [] ; rseq = [] ; continue
-		resname = l[1]
-		if l[4] != '':
-			dG.append(float(l[4]))
-			seq.append(l[1])
-
 def check_seq(seq):
 	for aa in seq:
 		if aa not in settings.acceptable_aa: 
