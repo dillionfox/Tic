@@ -3,13 +3,13 @@ from __future__ import print_function
 import re, os
 from Bio import SeqIO
 import numpy as np
+from tic_utils import plotter
 from tic_utils import table
 from tic_utils import helpstr
 from tic_utils import parser
 from tic_utils import ref_tests
 from tic_utils import core
 from tic_utils.core import Tic_tools
-from tic_utils.core import plt
 from tic_utils.err import InputError
 from tic_utils.post import PostProc
 from tic_utils.settings import settings
@@ -45,10 +45,7 @@ class Tic:
 
 	def display(self):
 		if self.sin_filter or self.display_sin or self.plot_phi_shift or self.standard_plot or self.plot_auto_filter or self.plot_auto_filter_rejected or self.make_palign:
-			if 'DISPLAY' in os.environ: plt.show()
-			else:
-				print("Cannot open display. Saving plot as 'result.png' in working directory")
-				plt.savefig(self.fasta.split('.')[0]+'_'+self.dG_scale+'_plot.png')
+			plotter.display(self.fasta,self.dG_scale)
 		self.print_stats()
 		return None
 
@@ -74,7 +71,7 @@ class Tic:
 		for self.fasta in self.fasta_list:
 			for self.dG_scale in self.dG_scale_list:
 				inst_data = []
-				core.Tic_tools.reset() ; plt.clf()
+				core.Tic_tools.reset() ; plotter.clearplt()
 				with open(self.fasta.split('.')[0]+'_Tic.fasta','w') as fp, open(self.fasta.split('.')[0]+'_nTic.fasta','w') as fn:
 					for name,seq,dG,i in parser.parse_fasta(SeqIO,self.fasta,self.dG_scale):
 						calc = self.main_calcs(name,seq,dG,i)
@@ -85,6 +82,8 @@ class Tic:
 				data.append(inst_data)
 		post = PostProc(data)
 		post.run()
+		#post.plot()
+		plotter.display(self.fasta,'corr','Correlation')
 		return None
 
 if __name__ == "__main__":
