@@ -18,6 +18,7 @@ class Tic:
 	def __init__(self,**kwargs):
 		self.set_kwargs(kwargs)
 		self.check_input()
+		self.data = []
 
 	def set_kwargs(self,kwargs):
 		self.__dict__.update((key, value) for key,value in zip(settings.opts.keys(),settings.opts.values()))
@@ -67,11 +68,9 @@ class Tic:
 		return inst
 
 	def run(self):
-		data = []
 		for self.fasta in self.fasta_list:
 			for self.dG_scale in self.dG_scale_list:
-				inst_data = []
-				core.Tic_tools.reset() ; plotter.clearplt()
+				inst_data = [] ; core.Tic_tools.reset() ; plotter.clearplt()
 				with open(self.fasta.split('.')[0]+'_Tic.fasta','w') as fp, open(self.fasta.split('.')[0]+'_nTic.fasta','w') as fn:
 					for name,seq,dG,i in parser.parse_fasta(SeqIO,self.fasta,self.dG_scale):
 						calc = self.main_calcs(name,seq,dG,i)
@@ -79,10 +78,12 @@ class Tic:
 						else: fn.write(">"+name+"\n"+seq+"\n")
 						inst_data.append(calc)
 				self.display()
-				data.append(inst_data)
-		post = PostProc(data)
+				self.data.append(inst_data)
+		return None
+
+	def post(self,task="correlate"):
+		post = PostProc(self.data,task)
 		post.run()
-		#post.plot()
 		plotter.display(self.fasta,'corr','Correlation')
 		return None
 

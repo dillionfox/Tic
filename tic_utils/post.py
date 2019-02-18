@@ -5,21 +5,18 @@ from tic_utils import plotter
 import numpy as np
 
 class PostProc:
-	def __init__(self,data):
+	def __init__(self,data,task):
 		self.data = np.array(data)
 		self.corr = None
+		self.task = task
 		plotter.clearplt()
+		self.check_input()
 
-	def print_data(self):
-		print("placeholder function. This code is under development")
-		# example usage of correlation function between two data sets
-		#c = autotools.corr(self.data[0][0],self.data[0][1])
-		#print(c)
-
-		# example of how to access data
-		#for fil in self.data:
-		#	for dG in fil:
-		#		print(dG.var)
+	def check_input(self):
+		if self.data.shape[0] != 2 and "correlate" in self.task:
+			print("You must have two dG scales to run correlation")
+			exit()
+		return None
 
 	def run_corr(self):
 		for i in range(len(self.data[0])):
@@ -27,9 +24,14 @@ class PostProc:
 			plotter.plot(self.corr,False,'Correlation')
 		return None
 
+	def stats(self):
+		for i in range(len(self.data)):
+			print(i, self.data[i].shape)
+
 	def run(self):
-		#self.print_data()
-		self.run_corr()
+		if "correlate" in self.task:
+			self.run_corr()
+			self.stats()
 		return None
 
 	def plot(self):
