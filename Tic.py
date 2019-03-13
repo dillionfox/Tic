@@ -46,7 +46,7 @@ class Tic:
 
 	def display(self):
 		if self.sin_filter or self.display_sin or self.plot_phi_shift or self.standard_plot or self.plot_auto_filter or self.plot_auto_filter_rejected or self.make_palign:
-			plotter.display(self.fasta,self.dG_scale)
+			plotter.display(self.fasta,"standard_plot",self.save)
 		self.print_stats()
 		return None
 
@@ -81,10 +81,9 @@ class Tic:
 				self.data.append(inst_data)
 		return None
 
-	def post(self,task="correlate"):
-		post = PostProc(self.data,task)
+	def post(self,task=["correlate"]):
+		post = PostProc(self.data,task,self.fasta,self.__dict__)
 		post.run()
-		plotter.display(self.fasta,'corr','Correlation')
 		return None
 
 if __name__ == "__main__":

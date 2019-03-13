@@ -26,6 +26,7 @@ class settings:
 		'weblogo_txt':		'',\
 		'ex_seq':		'',\
 		'skip_100':		False,\
+		'save':			False,\
 		}
 		
 	acceptable_aa = ['A', 'C', 'D', 'E', 'F', 'G',\
